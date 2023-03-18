@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 
 
 CSV_data=pd.read_csv('table.csv',delimiter=",",encoding='gbk')
-print(CSV_data.head())
+#print(CSV_data.head())
 
 EXCEL_data=pd.read_excel('table.xls',na_values='--')#recognize NULL str
-print(EXCEL_data.head())
+#print(EXCEL_data.head())
 
-print(CSV_data.dtypes)
-print(EXCEL_data.dtypes)
+#print(CSV_data.dtypes)
+#print(EXCEL_data.dtypes)
 
 datesplit=EXCEL_data['时间'].str.split(',',expand=True)
 new_name=['日期','星期']
 datesplit.columns=new_name
-print(datesplit.head())
+#print(datesplit.head())
 
 EXCEL_data=pd.concat([datesplit,EXCEL_data],axis=1)
 EXCEL_data.pop('时间')
@@ -30,10 +30,10 @@ EXCEL_data.pop('时间')
 EXCEL_data.set_index('日期',inplace=True)#set index,and make it avalibale
 
 #EXCEL_data.interpolate(inplace=True).iloc[1:,:]
-print(EXCEL_data.head())
+#print(EXCEL_data.head())
 # statistic week catologue
 EXCEL_data['开盘'].plot.hist(alpha=0.5)
-plt.show()
+#plt.show()
 result=EXCEL_data.groupby('星期',sort=False).describe()
 result.to_excel('group.xls',sheet_name='sheet1',engine='xlsxwriter')
 
@@ -53,12 +53,18 @@ EXCEL_data['mark55']=np.where(EXCEL_data.收盘>EXCEL_data.fiftyfivema,1,0)
 
 EXCEL_data['cumsum3']=EXCEL_data['mark3'].cumsum()
 #EXCEL_data['count3']=EXCEL_data.GroupBy('mark3').count()
-zero_court=EXCEL_data[EXCEL_data['mark3']==0].groupby('cumsum3').size()
+zero_count=EXCEL_data[EXCEL_data['mark3']==0].groupby('cumsum3').size()
+zero_count_index=EXCEL_data[EXCEL_data['mark3']==0].groupby('cumsum3').first()
 
-one_count=zero_court.index.to_series().diff()
-print(zero_court)
-print(one_count)
+#sub_zero_court=zero_court[1]
+one_count=zero_count.index.to_series().diff()
+#col_count=zero_count.append(one_count)
+
+
+print(zero_count_index)
+#print(one_count)
 #EXCEL_data['count3']=EXCEL_data.groupby('mark3').transform(zero_court)
+
 EXCEL_data.to_excel('ma.xls',sheet_name='sheet1',engine='xlsxwriter')
-zero_court.to_excel('ma.xls',sheet_name='sheet2',engine='xlsxwriter')
-one_count.to_excel('ma.xls',sheet_name='sheet2',engine='xlsxwriter')
+#zero_court.to_excel('ma.xls',sheet_name='sheet2',engine='xlsxwriter')
+#one_count.to_excel('ma.xls',sheet_name='sheet2',engine='xlsxwriter')
